@@ -268,55 +268,24 @@ being the agent that is doing the sending.
 The word "Ntype" is used as a short form of "Normative Type".
 
 The Normative Type data descriptions are given with the syntactic
-conventions and grammar given below. The types are described in a
-BNF-like syntax in order to add clear distinctions between symbol types,
-particularly terminality, recurrence, which names a user is expected to
-add and which are predefined. This syntax is essentially Extended
+conventions and grammar given below.  The syntax is essentially Extended
 Backus-Naur Form (EBNF), with some slight modifications to preserve the
 order of terms and the rules for line ends and indentation.
 
-The syntactic conventions are as follows.
-
-First, the conventions for terminal and non-terminal types are:
-
--  *italics* - a non-terminal. These are used to stand for a choice of
-   pvData type, or named sequence of fields, or for a specific structure
-   or union, and hence non-terminal.
--  ``plaintext`` - terminals. These will be either a pvData Meta
-   Language keyword or a label. The Meta language keywords consist of
-   ``structure``, ``union``, ``any``, the scalar type keywords
-   (``boolean``, ``byte``, ``short``, ``int``, ``long``, ``double``,
-   ``ubyte``, ``ushort``, ``uint``, ``ulong``, ``float``, ``double`` and
-   ``string``) and the corresponding arrays ``structure[]``,
-   ``union[]``, ``any[]``, and scalar arrays (e.g. ``int[]``,
-   ``double[]]``).
--  <name> - A user-provided label name.A programmer using the Normative
+-  <name> - A user-provided label name. A programmer using the Normative
    Type will choose what goes in the <>.
 
-So, for example, `scalar_t <#scalar_t>`__ is non-terminal as it stands
-for a choice of pvData type and `time_t <#time_t>`__ is non-terminal
-because it stands for a particular structure. On the other hand, in the
+So, for example, `scalar_t <#scalar_t>`__  stands
+for a choice of pvData type and `time_t <#time_t>`__ stands
+for a particular structure. On the other hand, in the
 definition of *time_t*, ``long`` and ``secondsPastEpoch`` are a keyword
-and a label respectively, and so are terminal, and the columns of
+and a label respectively, and the columns of
 `NTTable <#nttable>`__, <colname>, are user-provided labels.
 
 In this section <> will also be used for describing patterns of
-definitions or meta rules such as production rules of the grammar to
-indicate a choice of terminal or non-terminal terms in the pattern or
-rule.
+definitions or meta rules such as production rules of the grammar.
 
-The EBNF-like syntax for definitions is used. A description consists of
-3 terms - a left-hand side (LHS), a right-hand side (RHS), and the
-symbol ":=" separating them, which is to be interpreted as "LHS is
-defined as RHS". The LHS will be the non-terminal being defined. The RHS
-will be a sequence of terminal or non-terminal terms.
-
-Note that in the definitions below line-ends (EOLs) are not explicitly
-specified. They are implied except when multiple lines are used to
-specify alternatives separated by \|, where only the final EOL is
-implied.
-
-The following EBNF symbols are also used:
+The following symbols are also used:
 
 -  \| - used to separate alternative items; one item is chosen from this
    list of alternatives.
@@ -327,20 +296,17 @@ The following EBNF symbols are also used:
 -  { } - a sequence of occurrences of the item or items in the braces.
    The number of occurrences follows. 0+ means 0 or more. 1+ means 1 or
    more.
+- [] - may be used to define an array in the C-language style
 
 The following production rules are employed:
 
-1. Replace a non-terminal by its definition, except where the
-   non-terminal defines a structure or union and is followed by a field
-   name. (The modified rule for non-terminal structures and unions is
-   described below.)
-2. Choose an alternative for items separated by \|.
-3. Choose a user supplied label for items between angle brackets (< and
+1. Choose an alternative for items separated by \|.
+2. Choose a user supplied label for items between angle brackets (< and
    >).
-4. Include or discard items between square brackets ([ and ]). Note this
+3. Include or discard items between square brackets ([ and ]). Note this
    excludes a pair of square brackets ([]) used to signify an array.
-5. Include or discard fields marked ``:opt``.
-6. For items between braces ({ and }) replace with an appropriate number
+4. Include or discard fields marked ``:opt``.
+5. For items between braces ({ and }) replace with an appropriate number
    of occurrences of the item. For a sequence of pvData fields a
    line-end (EOL) is implied after each one.
 
@@ -349,40 +315,7 @@ terms in the pvData Meta language, as well as obtaining appropriate
 indentation, the usual EBNF rule of replacing a non-terminal by its
 definition requires the following modification:
 
-Suppose a non-terminal term has a definition of the form
-
-::
-
-   <non-terminal>:=
-
-   structure
-       fieldList
-
-where:
-
-<*non-terminal*>
-   The non-terminal term being defined.
-/
-   A choice of terminal or non-terminal terms describing a a list or 0
-   or more pvData fields.
-
-Then for a label (a field name), /, the terms
-
-::
-
-   <non-terminal> fieldName
-
-are replaced by
-
-::
-
-   structure fieldName
-       fieldList
-
-The result of the any substitution is suitably indented to preserve the
-logic of the pvData meta language.
-
-Thus the structure derived from the definition of `NTEnum <#ntenum>`__
+A structure derived from the definition of `NTEnum <#ntenum>`__
 below, with all optional fields present, is
 
 ::
@@ -401,8 +334,6 @@ below, with all optional fields present, is
            int      status
            string   message
 
-The same rule also applies with ``union`` in place of ``structure``.
-
 The grammar for a Normative Type definition follows the pattern below.
 That is, a Normative Type is defined as a structure composed of fields.
 A field may be optional, and may be described along with a comment:
@@ -414,35 +345,6 @@ A field may be optional, and may be described along with a comment:
    structure
       { pvDataField [:opt] [// commentText]] }1+
 
-where:
-
-<*NormativeType*>
-   The name of the Normative Type being defined.
-/
-   A choice of terms defining a pvData field
-:opt
-   Indicates that the preceding field is optional in the Normative Type.
-// /
-   A field production element may be followed by a comment.
-
-In most cases a Normative Type definition will be of the form
-
-::
-
-   <NTname>:=
-
-   structure
-      { ntfieldChoice fieldName [:opt] [// commentText] }1+
-
-where:
-
-/
-   Terminal or non-terminal terms, possibly separated by \|, from the
-   valid `Normative Type Fields <#normative-type-fields>`__ as defined
-   below.
-/
-   The identifier of the field. Usually a terminal label.
-
 For example, a definition meeting this pattern would be
 
 ::
@@ -450,11 +352,26 @@ For example, a definition meeting this pattern would be
    NTExample :=
 
    structure
-       enum_t | scalar_t   value
+       enum_t              machineState
        int                 N                  // this field has a comment
-       string              descriptor  :opt
-       alarm_t             alarm       :opt
-       time_t              timeStamp   :opt
+       string              descriptor
+       alarm_t             alarm
+       time_t              timeStamp
+
+The same rule also applies with ``union``:
+
+::
+
+   NTExample2 :=
+
+   structure
+       union
+           enum_t              machineState
+           scalar_t            value
+           int                 N                  // this field has a comment
+       string              descriptor
+       alarm_t             alarm
+       time_t              timeStamp
 
 Normative Type Fields
 ---------------------
@@ -943,7 +860,7 @@ or
 `"unionArray" <http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/tip/documentation/pvDataJava.html#metalang_union_array>`__.
 
 The union Normative Type fields consist of the variant union ``any`` and
-variant union array ``any\[\]`` as well as a number of non-terminal
+variant union array ``any\[\]`` as well as a number of user defined
 terms:
 
 any
